@@ -10,6 +10,7 @@ import com.mcb.billing.repository.RateRepository;
 import com.mcb.billing.repository.UserRepository;
 import com.mcb.billing.service.BillService;
 import com.mcb.billing.utils.BillConverter;
+import com.mcb.billing.utils.UserConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -75,8 +76,10 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public BillDto addBill(BillDto billDto,Integer number) {
-        Bill bill = BillConverter.convertToBillEntity(billDto);
         User user = userRepository.getUserByMeterNo(number);
+        billDto.setUser(UserConverter.convertToUserDto(user));
+        Bill bill = BillConverter.convertToBillEntity(billDto);
+
 
 
         LocalDate date =  bill.getBillDate();

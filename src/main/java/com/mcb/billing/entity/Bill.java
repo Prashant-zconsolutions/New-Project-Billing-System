@@ -1,5 +1,6 @@
 package com.mcb.billing.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -15,6 +16,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "bills")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Bill {
 
     @Id
@@ -31,7 +33,7 @@ public class Bill {
     @Column(name = "bill_amount")
     private double billAmount;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "meter_number")
     private User user;
 
