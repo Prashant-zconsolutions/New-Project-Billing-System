@@ -18,4 +18,6 @@ public interface BillService {
     String deleteByBillNo(Integer number);
 
     BillDto getBillByNo(Integer number);
+
+    BillDto updateBillByBillNumber(Integer billNumber,BillDto billDto);
 }

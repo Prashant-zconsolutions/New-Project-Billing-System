@@ -18,12 +18,47 @@ public class RateController {
     @Autowired
     private RateService rateService;
 
-    @GetMapping("/getAllRates/{userType}")
-    public ResponseEntity<List<RateDto>> getAllRates(@RequestParam("userType") String userType)
+    @GetMapping("/getAllRatesByUserType/{userType}")
+    public ResponseEntity<List<RateDto>> getAllRates(@PathVariable("userType") String userType)
     {
-        List<RateDto> rateDto = rateService.getAllRates(userType);
+        System.out.println(" >>>> >>>>>>>>> "+userType);
+        List<RateDto> rateDto = rateService.getAllRatesByUserType(userType);
         return new ResponseEntity<>(rateDto, HttpStatus.OK);
     }
+
+    @GetMapping("/getRateById/{rateId}")
+    public ResponseEntity<RateDto> getRateByRateId(@PathVariable Integer rateId)
+    {
+        RateDto rateDto =  rateService.getRateByRateId(rateId);
+        return new ResponseEntity<>(rateDto,HttpStatus.OK);
+    }
+
+
+    @PostMapping("/addRate")
+    public ResponseEntity<RateDto> addRate(@RequestBody RateDto rateDto)
+    {
+        RateDto saveRateDto = rateService.addRate(rateDto);
+        return new ResponseEntity<>(saveRateDto,HttpStatus.OK);
+    }
+
+    @PutMapping("/updateRate/{rateId}")
+    public ResponseEntity<RateDto> updateRateById(@PathVariable Integer rateId,@RequestBody RateDto rateDto)
+    {
+        RateDto updatedRate = rateService.updateRateById(rateId,rateDto);
+        return new ResponseEntity<>(updatedRate,HttpStatus.OK);
+    }
+
+
+    @DeleteMapping("/deleteRateById/{rateId}")
+    public ResponseEntity<String> deleteRateById(@PathVariable Integer rateId)
+    {
+        String msg =  rateService.deleteRateById(rateId);
+        return new ResponseEntity<>(msg,HttpStatus.OK);
+    }
+
+
+
+
 
 
 }

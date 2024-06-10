@@ -57,14 +57,16 @@ public class BillController {
     }
 
 
-    @GetMapping("/getBillByMeterNoAndDate{meterNumber}{date}")
-    public ResponseEntity<BillDto> getBillByMeterNoAndDate(@RequestParam("meterNumber") Integer meterNumber,
-                                                           @RequestParam("date") LocalDate date)
+
+    @PutMapping("/updateBillByBillNo/{billNumber}")
+    public ResponseEntity<BillDto> updateBillByBillNumber(@PathVariable Integer billNumber,@RequestBody BillDto billDto)
     {
-        System.out.println(meterNumber+" >>> "+date);
-        BillDto billDto = billService.getAllBillByMeterNoAndDate(meterNumber, date);
-        return new ResponseEntity<>(billDto,HttpStatus.OK);
+        BillDto updatedBill =  billService.updateBillByBillNumber(billNumber,billDto);
+        return new ResponseEntity<>(updatedBill,HttpStatus.OK);
     }
+
+
+
 
 
 

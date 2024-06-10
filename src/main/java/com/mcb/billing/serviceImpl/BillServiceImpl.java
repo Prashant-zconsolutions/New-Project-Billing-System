@@ -95,7 +95,7 @@ public class BillServiceImpl implements BillService {
         else
         {
             bill.setUser(user);
-            List<Rate> rates = rateRepository.getAllRates(user.getUserType());
+            List<Rate> rates = rateRepository.getAllRatesByUserType(user.getUserType());
             double calculatedPrice = calculatePrice(rates,bill.getBillUnit());
             bill.setBillAmount(calculatedPrice);
             Bill bill1 =  billRepository.save(bill);
@@ -210,5 +210,29 @@ public class BillServiceImpl implements BillService {
         {
             throw new ResourceNotFoundException("Bill is not exist with given bill number : " + number);
         }
+    }
+
+    @Override
+    public BillDto updateBillByBillNumber(Integer billNumber, BillDto billDto) {
+
+        Bill bill = billRepository.getBillByBillNo(billNumber);
+
+        if(bill == null)
+        {
+            throw new ResourceNotFoundException("Bill is not exist with given bill number : " + billNumber);
+        }
+        else
+        {
+            bill.setBillDate(billDto.getBillDate());
+            bill.setBillUnit(billDto.getBillUnit());
+
+            List<Rate> rates = rateRepository.getAllRatesByUserType(bill.getUser().getUserType());
+            double calculatedPrice = calculatePrice(rates,billDto.getBillUnit());
+            bill.setBillAmount(calculatedPrice);
+
+           Bill saveBill =  billRepository.save(bill);
+           return BillConverter.convertToUserDto(saveBill);
+        }
+
     }
 }

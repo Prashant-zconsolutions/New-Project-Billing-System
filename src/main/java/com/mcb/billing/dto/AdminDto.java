@@ -1,6 +1,7 @@
 package com.mcb.billing.dto;
 
-
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,12 +11,10 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class RateDto {
+public class AdminDto {
 
-    private int rateId;
-    private String userType;
-    private double userPrice;
-    private int rateMin;
-    private int rateMax;
+    private Integer adminId;
+    private String adminUserName;
+    private String adminPassword;
 
 }

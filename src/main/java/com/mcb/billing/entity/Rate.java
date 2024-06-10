@@ -27,10 +27,10 @@ public class Rate {
     private double userPrice;
 
     @Column(name = "rate_min")
-    private float rateMin;
+    private int rateMin;
 
     @Column(name = "rate_max")
-    private float rateMax;
+    private int rateMax;
 
 
 }
