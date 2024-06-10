@@ -79,5 +79,6 @@ INSERT INTO public.admin(
 	admin_username, admin_password)
 	VALUES ('Test', 'test');
 
+
 ALTER TABLE IF EXISTS public.rates
     ADD COLUMN user_price numeric;
