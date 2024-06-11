@@ -2,6 +2,7 @@ package com.mcb.billing.controller;
 
 import com.mcb.billing.dto.RateDto;
 import com.mcb.billing.service.RateService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
@@ -21,7 +22,6 @@ public class RateController {
     @GetMapping("/getAllRatesByUserType/{userType}")
     public ResponseEntity<List<RateDto>> getAllRates(@PathVariable("userType") String userType)
     {
-        System.out.println(" >>>> >>>>>>>>> "+userType);
         List<RateDto> rateDto = rateService.getAllRatesByUserType(userType);
         return new ResponseEntity<>(rateDto, HttpStatus.OK);
     }
@@ -35,7 +35,7 @@ public class RateController {
 
 
     @PostMapping("/addRate")
-    public ResponseEntity<RateDto> addRate(@RequestBody RateDto rateDto)
+    public ResponseEntity<RateDto> addRate(@Valid @RequestBody RateDto rateDto)
     {
         RateDto saveRateDto = rateService.addRate(rateDto);
         return new ResponseEntity<>(saveRateDto,HttpStatus.OK);

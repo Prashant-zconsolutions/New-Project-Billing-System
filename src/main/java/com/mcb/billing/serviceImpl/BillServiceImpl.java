@@ -90,7 +90,7 @@ public class BillServiceImpl implements BillService {
         }
         else if (checkDuplicateIdAndDate(number ,bill.getBillDate()))
         {
-            throw new ResourceNotFoundException("Bill already created with given meter number : " + number+" and date : "+bill.getBillDate());
+            throw new ResourceNotFoundException("Bill already created with given meter number : " + number+" and date : "+bill.getBillDate().getYear()+" "+bill.getBillDate().getMonth());
         }
         else
         {

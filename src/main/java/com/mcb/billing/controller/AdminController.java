@@ -2,6 +2,7 @@ package com.mcb.billing.controller;
 
 import com.mcb.billing.dto.AdminDto;
 import com.mcb.billing.service.AdminService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,7 +40,7 @@ public class AdminController {
          return new ResponseEntity<>(adminDtoList, HttpStatus.OK);
     }
 
-    @GetMapping("/getAdminById/{id}")
+    @GetMapping("/getAdminById/{adminId}")
     public ResponseEntity<AdminDto> getAdminById(@PathVariable Integer adminId)
     {
         AdminDto adminDto =  adminService.getAdminById(adminId);
@@ -47,7 +48,7 @@ public class AdminController {
     }
 
     @PostMapping("/addAdmin")
-    public ResponseEntity<AdminDto> addAdmin(@RequestBody AdminDto adminDto)
+    public ResponseEntity<AdminDto> addAdmin(@Valid @RequestBody AdminDto adminDto)
     {
         AdminDto saveAdmin =  adminService.createNewAdmin(adminDto);
         return new ResponseEntity<>(saveAdmin,HttpStatus.OK);
@@ -62,7 +63,7 @@ public class AdminController {
 
     @PutMapping("/updateAdminById/{adminId}")
     public ResponseEntity<AdminDto> updateAdminById(@PathVariable Integer adminId,
-                                                    @RequestBody AdminDto adminDto)
+                                                    @Valid @RequestBody AdminDto adminDto)
     {
         AdminDto updatedAdmin =  adminService.updateAdmin(adminId,adminDto);
         return new ResponseEntity<>(updatedAdmin,HttpStatus.OK);

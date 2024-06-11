@@ -55,10 +55,11 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.getUserByMeterNo(number);
         if (user != null)
         {
-            userRepository.deleteByMeterNo(number);
-            return "User Deleted Successfully!";
+                userRepository.deleteByMeterNo(number);
+                return "User Deleted Successfully!";
         }
-        else {
+        else
+        {
             throw new ResourceNotFoundException("User is not exist with given meter number : " + number);
         }
     }

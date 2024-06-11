@@ -2,13 +2,12 @@ package com.mcb.billing.controller;
 
 import com.mcb.billing.dto.BillDto;
 import com.mcb.billing.service.BillService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -35,7 +34,7 @@ public class BillController {
 
     @PostMapping("/addBill/{number}")
     public ResponseEntity<BillDto> addBill(@PathVariable Integer number,
-                                           @RequestBody BillDto billDto)
+                                           @Valid @RequestBody BillDto billDto)
     {
         BillDto billDto1 = billService.addBill(billDto,number);
         return new ResponseEntity<>(billDto1,HttpStatus.OK);
@@ -59,7 +58,7 @@ public class BillController {
 
 
     @PutMapping("/updateBillByBillNo/{billNumber}")
-    public ResponseEntity<BillDto> updateBillByBillNumber(@PathVariable Integer billNumber,@RequestBody BillDto billDto)
+    public ResponseEntity<BillDto> updateBillByBillNumber(@PathVariable Integer billNumber,@Valid @RequestBody BillDto billDto)
     {
         BillDto updatedBill =  billService.updateBillByBillNumber(billNumber,billDto);
         return new ResponseEntity<>(updatedBill,HttpStatus.OK);

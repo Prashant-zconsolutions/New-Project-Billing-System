@@ -11,7 +11,7 @@ public class BillConverter {
     {
 //        System.out.println(bill.getUser().getFirstName());
         UserDto userDto =  UserConverter.convertToUserDto(bill.getUser());
-        System.out.println(userDto.getFirstName());
+//        System.out.println(userDto.getFirstName());
         return new BillDto(
                 bill.getBillNumber(),
                 bill.getBillDate(),

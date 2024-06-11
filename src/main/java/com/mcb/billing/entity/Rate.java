@@ -24,13 +24,13 @@ public class Rate {
     private String userType;
 
     @Column(name = "user_price")
-    private double userPrice;
+    private Double userPrice;
 
     @Column(name = "rate_min")
-    private int rateMin;
+    private Integer rateMin;
 
     @Column(name = "rate_max")
-    private int rateMax;
+    private Integer rateMax;
 
 
 }

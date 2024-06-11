@@ -2,6 +2,7 @@ package com.mcb.billing.controller;
 
 import com.mcb.billing.dto.UserDto;
 import com.mcb.billing.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class UserController {
     }
 
     @PostMapping("/addUser")
-    public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto)
+    public ResponseEntity<UserDto> addUser(@Valid @RequestBody UserDto userDto)
     {
         UserDto dto = userService.addUser(userDto);
         return new ResponseEntity<>(dto,HttpStatus.OK);
@@ -35,8 +36,17 @@ public class UserController {
     @DeleteMapping("/deleteUser/{number}")
     public ResponseEntity<String> deleteUser(@PathVariable Integer number)
     {
-        String s = userService.deleteUserByNo(number);
-        return new ResponseEntity<>(s,HttpStatus.OK);
+        try
+        {
+            String s = userService.deleteUserByNo(number);
+            return new ResponseEntity<>(s,HttpStatus.OK);
+        }
+        catch (Exception ex)
+        {
+            return new ResponseEntity<>(ex.getMessage(),HttpStatus.OK);
+        }
+
+
     }
 
     @GetMapping("/getUserByNumber/{number}")
@@ -47,7 +57,7 @@ public class UserController {
     }
 
     @PutMapping("/updateUser/{number}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Integer number ,@RequestBody UserDto userDto)
+    public ResponseEntity<UserDto> updateUser(@PathVariable Integer number ,@Valid @RequestBody UserDto userDto)
     {
         UserDto dto =  userService.updateUser(number,userDto);
         return new ResponseEntity<>(dto,HttpStatus.OK);

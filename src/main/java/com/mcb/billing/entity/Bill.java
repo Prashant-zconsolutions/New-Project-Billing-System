@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
 
 import java.time.LocalDate;
 
@@ -28,7 +30,7 @@ public class Bill {
     private LocalDate billDate;
 
     @Column(name = "bill_unit")
-    private int billUnit;
+    private Integer billUnit;
 
     @Column(name = "bill_amount")
     private double billAmount;
