@@ -1,5 +1,6 @@
 package com.mcb.billing.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -13,7 +14,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class UserDto {
 
     private Integer meterNumber;
@@ -37,8 +37,9 @@ public class UserDto {
     @Pattern(regexp="^\\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Z|a-z]{2,}\\b$", message="Invalid email address")
     private String email;
 
-    @NotEmpty(message = "First cannot be null")
+    @NotEmpty(message = "Phone number cannot be null")
     @Pattern(regexp="^[789]\\d{9}$", message="Invalid phone number")
+    @JsonIgnore
     private String phoneNumber;
 
     @NotEmpty(message = "UserType cannot be null")

@@ -9,7 +9,7 @@ public class RateConverter {
     {
         return new RateDto(
                 rate.getRateId(),
-                rate.getUserType(),
+                rate.getUserType().trim(),
                 rate.getUserPrice(),
                 rate.getRateMin(),
                 rate.getRateMax()
@@ -20,7 +20,7 @@ public class RateConverter {
     {
         return new Rate(
                 rateDto.getRateId(),
-                rateDto.getUserType(),
+                rateDto.getUserType().trim(),
                 rateDto.getUserPrice(),
                 rateDto.getRateMin(),
                 rateDto.getRateMax()

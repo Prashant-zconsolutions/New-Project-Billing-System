@@ -1,7 +1,9 @@
 package com.mcb.billing.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +15,6 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class BillDto {
 
     private int billNumber;
@@ -22,9 +23,10 @@ public class BillDto {
     private LocalDate billDate;
 
     @NotNull(message = "Bill unit cannot be null")
+    @Min(value = 1, message = "Value must be greater than 0")
     private Integer billUnit;
 
-    private double billAmount;
+    private Double billAmount;
 
     private UserDto user;
 

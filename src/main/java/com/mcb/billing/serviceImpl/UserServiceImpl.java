@@ -25,7 +25,6 @@ public class UserServiceImpl implements UserService {
        List<UserDto> userDtoList = userList.stream()
                .map(UserConverter::convertToUserDto)
                .collect(Collectors.toList());
-
        return userDtoList;
     }
 

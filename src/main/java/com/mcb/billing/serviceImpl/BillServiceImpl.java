@@ -63,14 +63,12 @@ public class BillServiceImpl implements BillService {
 
         if(bill == null)
         {
-            throw new ResourceNotFoundException("User is not exist with given user number : " + meterNumber);
+            throw new ResourceNotFoundException("Bill is not exist with given meter number: " + meterNumber+" and date: "+date);
         }
         else
         {
             return BillConverter.convertToUserDto(bill);
         }
-
-
 
     }
 
@@ -104,36 +102,25 @@ public class BillServiceImpl implements BillService {
 
 
 
-//        int homeRate = 5;
-//        int commercialRate = 8;
-//        System.out.println(" >>>>> "+rate);
-//        if(rate != null)
-//        {
-//            bill.setBillAmount( rate * bill.getBillUnit());
-//
-//        }
-//        else {
-//            if (user.getUserType().equalsIgnoreCase("home"))
-//            {
-//                System.out.println("Home : " + homeRate);
-//                bill.setBillAmount(homeRate * bill.getBillUnit());
-//            }
-//
-//            if (user.getUserType().equalsIgnoreCase("commercial"))
-//            {
-//                System.out.println("Home : "+ homeRate);
-//                bill.setBillAmount( commercialRate * bill.getBillUnit());
-//            }
-//
-//        }
-
 
     }
 
     private boolean checkDuplicateIdAndDate(Integer number, LocalDate billDate) {
 
-        boolean val = false;
+//        boolean val = false;
 
+        Bill bill = billRepository.getBillByMeterNoAndYearAndMonth(billDate.getMonthValue(),billDate.getYear(),number);
+        return bill == null ? false : true;
+
+//        if(bill == null)
+//        {
+//            return val;
+//        }
+//        else {
+//            return val = true;
+//        }
+
+        /*
         List<Bill> billList =  billRepository.getAllBillsByMeterNumber(number);
 //        val = billList.stream()
 //                .map(Bill::getBillDate) // Get all bill dates
@@ -153,7 +140,9 @@ public class BillServiceImpl implements BillService {
                 break;
             }
         }
-        return val;
+
+         */
+//        return val;
 
     }
 

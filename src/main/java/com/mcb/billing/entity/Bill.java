@@ -33,7 +33,7 @@ public class Bill {
     private Integer billUnit;
 
     @Column(name = "bill_amount")
-    private double billAmount;
+    private Double billAmount;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "meter_number")

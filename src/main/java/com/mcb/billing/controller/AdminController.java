@@ -34,7 +34,7 @@ public class AdminController {
 
 
     @GetMapping("/getAllAdmins")
-    public ResponseEntity<List<AdminDto>> getAllAdmin()
+    public ResponseEntity<List<AdminDto>> getAllAdmins()
     {
          List<AdminDto> adminDtoList = adminService.getAllAdmins();
          return new ResponseEntity<>(adminDtoList, HttpStatus.OK);
@@ -48,7 +48,7 @@ public class AdminController {
     }
 
     @PostMapping("/addAdmin")
-    public ResponseEntity<AdminDto> addAdmin(@Valid @RequestBody AdminDto adminDto)
+    public ResponseEntity<AdminDto> createNewAdmin(@Valid @RequestBody AdminDto adminDto)
     {
         AdminDto saveAdmin =  adminService.createNewAdmin(adminDto);
         return new ResponseEntity<>(saveAdmin,HttpStatus.OK);

@@ -15,12 +15,12 @@ public interface UserRepository extends JpaRepository<User,Long> {
     List<User> getAllUsers();
 
     @Query(value = "SELECT * FROM users WHERE meter_number=:number",nativeQuery = true)
-    User getUserByMeterNo(@Param("number") Integer number);
+    User getUserByMeterNo(@Param("number") Integer meterNumber);
 
 
     @Transactional
     @Modifying
     @Query(value = "DELETE FROM users where meter_number=:number",nativeQuery = true)
-    void deleteByMeterNo(@Param("number") Integer number);
+    void deleteByMeterNo(@Param("number") Integer meterNumber);
 
 }

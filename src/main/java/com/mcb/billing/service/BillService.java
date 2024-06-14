@@ -13,11 +13,11 @@ public interface BillService {
 
     BillDto getAllBillByMeterNoAndDate(Integer meterNumber, LocalDate date);
 
-    BillDto addBill(BillDto billDto,Integer number);
+    BillDto addBill(BillDto billDto,Integer meterNumber);
 
-    String deleteByBillNo(Integer number);
+    String deleteByBillNo(Integer billNumber);
 
-    BillDto getBillByNo(Integer number);
+    BillDto getBillByNo(Integer billNumber);
 
     BillDto updateBillByBillNumber(Integer billNumber,BillDto billDto);
 }

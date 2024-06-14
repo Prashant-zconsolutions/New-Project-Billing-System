@@ -19,7 +19,7 @@ public interface AdminRepository extends JpaRepository<Admin,Integer> {
 
 
     @Query(value = "SELECT * FROM admin WHERE admin_id=:number",nativeQuery = true)
-    Admin getAdminById(@Param("number") Integer number);
+    Admin getAdminById(@Param("number") Integer adminId);
 
     @Query(value = "SELECT * FROM admin WHERE admin_username=:userName",nativeQuery = true)
     Admin getAdminByUsername(@Param("userName") String userName);
@@ -28,7 +28,7 @@ public interface AdminRepository extends JpaRepository<Admin,Integer> {
     @Transactional
     @Modifying
     @Query(value = "DELETE FROM admin where admin_id=:number",nativeQuery = true)
-    void deleteByAdminId(@Param("number") Integer number);
+    void deleteByAdminId(@Param("number") Integer adminId);
 
 
 

@@ -10,9 +10,9 @@ public interface UserService {
 
     UserDto addUser(UserDto userDto);
 
-    UserDto getUserByMeterNumber(Integer number);
+    UserDto getUserByMeterNumber(Integer meterNumber);
 
-    String deleteUserByNo(Integer number);
+    String deleteUserByNo(Integer meterNumber);
 
-    UserDto updateUser(Integer number,UserDto userDto);
+    UserDto updateUser(Integer meterNumber,UserDto userDto);
 }
