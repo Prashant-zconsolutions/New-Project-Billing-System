@@ -28,6 +28,11 @@ public interface BillRepository extends JpaRepository<Bill,Long> {
     Bill getBillByMeterNoAndYearAndMonth(Integer month,Integer year,Integer meterNumber);
 
 
+    @Query(value = "SELECT * FROM bills b WHERE EXTRACT(MONTH FROM bill_date) = ?1 AND EXTRACT(YEAR FROM bill_date) = ?2",nativeQuery = true)
+    List<Bill> getAllBillByMonthAndYear(Integer month,Integer year);
+
+
+
     @Transactional
     @Modifying
     @Query(value = "DELETE FROM bills WHERE bill_number =:bill_number",nativeQuery = true)

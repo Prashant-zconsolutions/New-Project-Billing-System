@@ -10,8 +10,8 @@ public class AdminConverter {
     {
         return new AdminDto(
                 admin.getAdminId(),
-                admin.getAdminUserName(),
-                admin.getAdminPassword()
+                admin.getAdminUserName().trim(),
+                admin.getAdminPassword().trim()
         );
     }
 
@@ -19,8 +19,8 @@ public class AdminConverter {
     {
         return new Admin(
                 adminDto.getAdminId(),
-                adminDto.getAdminUserName(),
-                adminDto.getAdminPassword()
+                adminDto.getAdminUserName().trim(),
+                adminDto.getAdminPassword().trim()
         );
     }
 

@@ -1,5 +1,6 @@
 package com.mcb.billing.serviceImpl;
 
+import com.mcb.billing.controller.AdminController;
 import com.mcb.billing.dto.BillDto;
 import com.mcb.billing.ecxception.ResourceNotFoundException;
 import com.mcb.billing.entity.Bill;
@@ -11,13 +12,14 @@ import com.mcb.billing.repository.UserRepository;
 import com.mcb.billing.service.BillService;
 import com.mcb.billing.utils.BillConverter;
 import com.mcb.billing.utils.UserConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,7 +62,6 @@ public class BillServiceImpl implements BillService {
     public BillDto getAllBillByMeterNoAndDate(Integer meterNumber, LocalDate date) {
 
         Bill bill = billRepository.getBillByMeterNoAndDate(meterNumber,date);
-
         if(bill == null)
         {
             throw new ResourceNotFoundException("Bill is not exist with given meter number: " + meterNumber+" and date: "+date);
@@ -224,4 +225,49 @@ public class BillServiceImpl implements BillService {
         }
 
     }
+
+    @Override
+    public List getAllBillsUsingMonth() {
+        Logger logger = LoggerFactory.getLogger(BillServiceImpl.class);
+
+        List<Bill> billList =  billRepository.getAllBillByMonthAndYear(01,2024);
+
+        List<BillDto> billDtos = billList.stream()
+                .map(BillConverter::convertToUserDto)
+                .collect(Collectors.toList());
+
+
+        List<Map<String, Object>> list = billDtos.stream()
+                .map(bill -> {
+
+
+
+                    int unit = bill.getBillUnit();
+                    String consumptionLevel;
+                    if (unit >= 0 && unit <= 100) {
+                        consumptionLevel = "Low consumption";
+                    } else if (unit > 100 && unit <= 300) {
+                        consumptionLevel = "Medium consumption";
+                    } else if (unit > 300) {
+                        consumptionLevel = "High consumption";
+                    } else {
+                        consumptionLevel = "Unknown"; // Handle unexpected values
+                    }
+
+                   return  Map.of("Bill number",bill.getBillNumber(),
+                            "Bill unit",bill.getBillUnit(),
+                           "User",bill.getUser(),
+                           "Bill Consumption",consumptionLevel
+                             );
+
+                }).collect(Collectors.toList());
+
+            return list;
+    }
+
+
+//    public static Map Consumption()
+//    {
+//
+//    }
 }

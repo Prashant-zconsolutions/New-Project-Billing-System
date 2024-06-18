@@ -9,6 +9,8 @@ public interface BillService {
 
     List<BillDto> getAllBills();
 
+    List getAllBillsUsingMonth();
+
     List<BillDto> getAllBillsBySpecificUser(Integer meterNumber);
 
     BillDto getAllBillByMeterNoAndDate(Integer meterNumber, LocalDate date);

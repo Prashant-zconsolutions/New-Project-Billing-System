@@ -39,7 +39,6 @@ public class UserDto {
 
     @NotEmpty(message = "Phone number cannot be null")
     @Pattern(regexp="^[789]\\d{9}$", message="Invalid phone number")
-    @JsonIgnore
     private String phoneNumber;
 
     @NotEmpty(message = "UserType cannot be null")
