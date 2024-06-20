@@ -4,12 +4,13 @@ import com.mcb.billing.dto.BillDto;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 public interface BillService {
 
     List<BillDto> getAllBills();
 
-    List getAllBillsUsingMonth();
+    Map getAllBillsUsingMonth(Integer month,Integer year);
 
     List<BillDto> getAllBillsBySpecificUser(Integer meterNumber);
 

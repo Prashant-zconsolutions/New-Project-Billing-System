@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/public")
@@ -28,12 +29,7 @@ public class PublicController {
         return new ResponseEntity<>(billDto, HttpStatus.OK);
     }
 
-    @GetMapping("/getAllBillsUsingMonth")
-    public ResponseEntity<List> getAllBillsUsingMonth()
-    {
-        List list = billService.getAllBillsUsingMonth();
-        return new ResponseEntity<>(list,HttpStatus.OK);
-    }
+
 
 
 }

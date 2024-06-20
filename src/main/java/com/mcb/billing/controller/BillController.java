@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/users")
@@ -65,6 +66,14 @@ public class BillController {
     }
 
 
+
+    @GetMapping("/getAllBillsUsingMonth{month}{year}")
+    public ResponseEntity<Map> getAllBillsUsingMonth(@RequestParam("month") Integer month,
+                                                     @RequestParam("year") Integer year)
+    {
+        Map list = billService.getAllBillsUsingMonth(month,year);
+        return new ResponseEntity<>(list,HttpStatus.OK);
+    }
 
 
 
