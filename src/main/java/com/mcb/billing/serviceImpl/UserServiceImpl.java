@@ -49,17 +49,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String deleteUserByNo(Integer number) {
+    public Boolean deleteUserByNo(Integer meterNumber){
 
-        User user = userRepository.getUserByMeterNo(number);
+        User user = userRepository.getUserByMeterNo(meterNumber);
         if (user != null)
         {
-                userRepository.deleteByMeterNo(number);
-                return "User Deleted Successfully!";
+                userRepository.deleteByMeterNo(meterNumber);
+                return true;
         }
         else
         {
-            throw new ResourceNotFoundException("User is not exist with given meter number : " + number);
+            return false;
         }
     }
 

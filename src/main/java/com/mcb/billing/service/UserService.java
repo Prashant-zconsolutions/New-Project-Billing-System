@@ -12,7 +12,7 @@ public interface UserService {
 
     UserDto getUserByMeterNumber(Integer meterNumber);
 
-    String deleteUserByNo(Integer meterNumber);
+    Boolean deleteUserByNo(Integer meterNumber);
 
     UserDto updateUser(Integer meterNumber,UserDto userDto);
 }

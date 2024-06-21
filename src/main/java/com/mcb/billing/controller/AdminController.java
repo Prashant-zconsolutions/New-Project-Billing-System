@@ -20,26 +20,13 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-//    @GetMapping("/message")
-//    public String getMessage()
-//    {
-//        return "Spring Security Enable";
-//    }
-//
-//    @GetMapping("/current-user")
-//    public String getLoggedInUser(Principal principal)
-//    {
-//        return principal.getName();
-//    }
-
-    Logger logger = LoggerFactory.getLogger(AdminController.class);
-
+    static Logger LOGGER = LoggerFactory.getLogger(AdminController.class);
 
 
     @GetMapping("/getAllAdmins")
     public ResponseEntity<List<AdminDto>> getAllAdmins()
     {
-        logger.info("Admin Controller: Get All Admins");
+        LOGGER.info("Admin Controller: Get All Admins");
          List<AdminDto> adminDtoList = adminService.getAllAdmins();
          return new ResponseEntity<>(adminDtoList, HttpStatus.OK);
     }
@@ -47,7 +34,7 @@ public class AdminController {
     @GetMapping("/getAdminById/{adminId}")
     public ResponseEntity<AdminDto> getAdminById(@PathVariable Integer adminId)
     {
-        logger.info("Admin Controller: Get Admin by it's ID");
+        LOGGER.info("Admin Controller: Get Admin by it's ID");
         AdminDto adminDto =  adminService.getAdminById(adminId);
         return new ResponseEntity<>(adminDto,HttpStatus.OK);
     }

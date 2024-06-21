@@ -34,18 +34,18 @@ public class BillController {
     }
 
     @PostMapping("/addBill/{number}")
-    public ResponseEntity<BillDto> addBill(@PathVariable Integer number,
+    public ResponseEntity<BillDto> addBill(@PathVariable Integer meterNumber,
                                            @Valid @RequestBody BillDto billDto)
     {
-        BillDto billDto1 = billService.addBill(billDto,number);
+        BillDto billDto1 = billService.addBill(billDto,meterNumber);
         return new ResponseEntity<>(billDto1,HttpStatus.OK);
     }
 
 
     @GetMapping("/getBillByNo/{number}")
-    public ResponseEntity<BillDto> getBillByNo(@PathVariable Integer number)
+    public ResponseEntity<BillDto> getBillByNo(@PathVariable Integer billNumber)
     {
-        BillDto billDto = billService.getBillByNo(number);
+        BillDto billDto = billService.getBillByNo(billNumber);
         return new ResponseEntity<>(billDto,HttpStatus.OK);
     }
 

@@ -233,20 +233,6 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public Map getAllBillsUsingMonth(Integer month,Integer year) {
-        Logger logger = LoggerFactory.getLogger(BillServiceImpl.class);
-
-//        List<Bill> billList =  billRepository.getAllBillByMonthAndYear(01,2024);
-//
-//        List<BillDto> billDtos = billList.stream()
-//                .map(BillConverter::convertToUserDto)
-//                .collect(Collectors.toList());
-//
-//
-//        List<Map<String, Object>> list = billDtos.stream()
-//                .map(bill -> consumptionCalculate(bill))
-//                .collect(Collectors.toList());
-//
-//            return list;
 
         String sql ="SELECT b.*, \n" +
                 "    CASE \n" +
@@ -263,28 +249,5 @@ public class BillServiceImpl implements BillService {
         Map<String, List<BillDtoDB>> listMap = list.stream().collect(Collectors.groupingBy(BillDtoDB::getConsumption));
         return listMap;
 
-    }
-
-
-    public static Map<String,Object> consumptionCalculate(BillDto bill)
-    {
-
-        int unit = bill.getBillUnit();
-        String consumptionLevel;
-        if (unit >= 0 && unit <= 100) {
-            consumptionLevel = "Low consumption";
-        } else if (unit > 100 && unit <= 300) {
-            consumptionLevel = "Medium consumption";
-        } else if (unit > 300) {
-            consumptionLevel = "High consumption";
-        } else {
-            consumptionLevel = "Unknown"; // Handle unexpected values
-        }
-
-        return  Map.of("Bill number",bill.getBillNumber(),
-                "Bill unit",bill.getBillUnit(),
-                "User First name",bill.getUser().getFirstName(),
-                "Bill Consumption",consumptionLevel
-        );
     }
 }

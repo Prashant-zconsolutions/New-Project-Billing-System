@@ -2,11 +2,16 @@ package com.mcb.billing.utils;
 
 import com.mcb.billing.dto.UserDto;
 import com.mcb.billing.entity.User;
+import org.modelmapper.ModelMapper;
 
 public class UserConverter {
 
     public static UserDto convertToUserDto(User user)
     {
+//        ModelMapper modelMapper = new ModelMapper();
+//        UserDto userDto = modelMapper.map(user, UserDto.class);
+//        return userDto;
+
         return new UserDto(
                 user.getMeterNumber(),
                 user.getFirstName(),
