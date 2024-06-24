@@ -18,7 +18,7 @@ public interface BillService {
 
     BillDto addBill(BillDto billDto,Integer meterNumber);
 
-    String deleteByBillNo(Integer billNumber);
+    Boolean deleteByBillNo(Integer billNumber);
 
     BillDto getBillByNo(Integer billNumber);
 

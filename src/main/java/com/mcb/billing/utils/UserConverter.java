@@ -8,36 +8,40 @@ public class UserConverter {
 
     public static UserDto convertToUserDto(User user)
     {
-//        ModelMapper modelMapper = new ModelMapper();
-//        UserDto userDto = modelMapper.map(user, UserDto.class);
-//        return userDto;
+        ModelMapper modelMapper = new ModelMapper();
+        UserDto userDto = modelMapper.map(user, UserDto.class);
+        return userDto;
 
-        return new UserDto(
-                user.getMeterNumber(),
-                user.getFirstName(),
-                user.getLastName(),
-                user.getAddress(),
-                user.getCity(),
-                user.getState(),
-                user.getEmail(),
-                user.getPhoneNumber(),
-                user.getUserType()
-        );
+//        return new UserDto(
+//                user.getMeterNumber(),
+//                user.getFirstName(),
+//                user.getLastName(),
+//                user.getAddress(),
+//                user.getCity(),
+//                user.getState(),
+//                user.getEmail(),
+//                user.getPhoneNumber(),
+//                user.getUserType()
+//        );
     }
 
     public static User convertToUserEntity(UserDto userDto)
     {
-        return new User(
-                userDto.getMeterNumber(),
-                userDto.getFirstName(),
-                userDto.getLastName(),
-                userDto.getAddress(),
-                userDto.getCity(),
-                userDto.getState(),
-                userDto.getEmail(),
-                userDto.getPhoneNumber(),
-                userDto.getUserType()
-        );
+        ModelMapper modelMapper = new ModelMapper();
+        User user = modelMapper.map(userDto, User.class);
+        return user;
+
+//        return new User(
+//                userDto.getMeterNumber(),
+//                userDto.getFirstName(),
+//                userDto.getLastName(),
+//                userDto.getAddress(),
+//                userDto.getCity(),
+//                userDto.getState(),
+//                userDto.getEmail(),
+//                userDto.getPhoneNumber(),
+//                userDto.getUserType()
+//        );
     }
 
 }

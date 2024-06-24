@@ -13,7 +13,7 @@ public interface RateService {
 
     RateDto updateRateById(Integer rateId,RateDto rateDto);
 
-    String deleteRateById(Integer rateId);
+    Boolean deleteRateById(Integer rateId);
 
     RateDto getRateByRateId(Integer rateId);
 }

@@ -4,6 +4,7 @@ import com.mcb.billing.dto.BillDto;
 import com.mcb.billing.service.BillService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +19,9 @@ public class BillController {
 
     @Autowired
     private BillService billService;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @GetMapping("/getAllBills")
     public ResponseEntity<List<BillDto>> getAllBills()
@@ -52,8 +56,15 @@ public class BillController {
     @DeleteMapping("/deleteBillByNo/{billNumber}")
     public ResponseEntity<String> deleteBillByNumber(@PathVariable Integer billNumber)
     {
-        String msg = billService.deleteByBillNo(billNumber);
-        return new ResponseEntity<>(msg,HttpStatus.OK);
+
+        if(billService.deleteByBillNo(billNumber))
+        {
+            String successMessage = messageSource.getMessage("bill.delete.success", null, null);
+            return ResponseEntity.ok(successMessage);
+        }else {
+            String notFoundMessage = messageSource.getMessage("bill.delete.notfound", new Object[]{billNumber}, null);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(notFoundMessage);
+        }
     }
 
 

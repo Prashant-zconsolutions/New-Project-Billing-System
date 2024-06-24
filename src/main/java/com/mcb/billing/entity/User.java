@@ -9,12 +9,13 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 @Table(name = "users")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class User {
+
+//    @AllArgsConstructor
+//    @NoArgsConstructor
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

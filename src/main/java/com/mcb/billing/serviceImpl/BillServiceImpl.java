@@ -184,11 +184,11 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public String deleteByBillNo(Integer number) {
+    public Boolean deleteByBillNo(Integer number) {
         Bill bill = billRepository.getBillByBillNo(number);
         if (bill != null){
             billRepository.deleteBillByNo(number);
-            return "Bill Deleted Successfully!";
+            return true;
         }else{
             throw new ResourceNotFoundException("Bill is not exist with given bill number : " + number);
         }

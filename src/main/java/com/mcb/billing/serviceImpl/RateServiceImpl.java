@@ -59,18 +59,18 @@ public class RateServiceImpl implements RateService {
     }
 
     @Override
-    public String deleteRateById(Integer rateId) {
+    public Boolean deleteRateById(Integer rateId) {
 
         Rate rate = rateRepository.getRateById(rateId);
 
         if (rate == null)
         {
-            throw new ResourceNotFoundException("Rate is not exist with given rate Id : " + rateId);
+            return false;
         }
         else
         {
             rateRepository.deleteRateById(rateId);
-            return "Rate Deleted Successfully!";
+            return true;
         }
 
     }

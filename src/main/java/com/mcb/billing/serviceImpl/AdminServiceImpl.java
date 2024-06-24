@@ -68,17 +68,17 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public String deleteAdminById(Integer adminNumber) {
+    public Boolean deleteAdminById(Integer adminNumber) {
 
         Admin admin = adminRepository.getAdminById(adminNumber);
         if(admin == null)
         {
-            throw new ResourceNotFoundException("Admin is not exist with given Admin Id : " + adminNumber);
+            return false;
         }
         else
         {
             adminRepository.deleteByAdminId(adminNumber);
-            return "Admin Deleted Successfully!";
+            return true;
         }
     }
 
@@ -102,4 +102,5 @@ public class AdminServiceImpl implements AdminService {
             throw new ResourceNotFoundException("Admin is not exist with given Admin Id : " + adminId);
         }
     }
+
 }
