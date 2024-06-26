@@ -1,13 +1,10 @@
 package com.mcb.billing.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.NotFound;
-import org.hibernate.annotations.NotFoundAction;
 
 import java.time.LocalDate;
 
@@ -18,7 +15,6 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "bills")
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Bill {
 
     @Id

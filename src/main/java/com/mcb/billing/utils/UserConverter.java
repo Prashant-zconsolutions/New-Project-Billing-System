@@ -6,9 +6,10 @@ import org.modelmapper.ModelMapper;
 
 public class UserConverter {
 
+    private static ModelMapper modelMapper = new ModelMapper();
+
     public static UserDto convertToUserDto(User user)
     {
-        ModelMapper modelMapper = new ModelMapper();
         UserDto userDto = modelMapper.map(user, UserDto.class);
         return userDto;
 
@@ -27,7 +28,6 @@ public class UserConverter {
 
     public static User convertToUserEntity(UserDto userDto)
     {
-        ModelMapper modelMapper = new ModelMapper();
         User user = modelMapper.map(userDto, User.class);
         return user;
 

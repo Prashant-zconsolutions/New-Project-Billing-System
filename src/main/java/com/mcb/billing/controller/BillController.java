@@ -24,9 +24,11 @@ public class BillController {
     private MessageSource messageSource;
 
     @GetMapping("/getAllBills")
-    public ResponseEntity<List<BillDto>> getAllBills()
+    public ResponseEntity<List<BillDto>> getAllBills(
+            @RequestParam(value = "pageNumber",defaultValue = "0",required = false)Integer pageNumber,
+            @RequestParam(value = "pageSize",defaultValue = "5",required = false)Integer pageSize)
     {
-        List<BillDto> billDto = billService.getAllBills();
+        List<BillDto> billDto = billService.getAllBills(pageNumber,pageSize);
         return new ResponseEntity<>(billDto, HttpStatus.OK);
     }
 

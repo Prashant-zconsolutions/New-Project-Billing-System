@@ -19,6 +19,7 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
 
+
     @Override
     public List<UserDto> getAllUsers() {
        List<User> userList = userRepository.getAllUsers();

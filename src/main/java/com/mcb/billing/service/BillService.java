@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface BillService {
 
-    List<BillDto> getAllBills();
+    List<BillDto> getAllBills(Integer pageNumber,Integer pageSize);
 
     Map getAllBillsUsingMonth(Integer month,Integer year);
 

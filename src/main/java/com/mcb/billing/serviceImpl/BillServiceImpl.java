@@ -12,9 +12,12 @@ import com.mcb.billing.repository.UserRepository;
 import com.mcb.billing.service.BillService;
 import com.mcb.billing.utils.BillConverter;
 import com.mcb.billing.utils.UserConverter;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -42,9 +45,13 @@ public class BillServiceImpl implements BillService {
 
 
 
+
     @Override
-    public List<BillDto> getAllBills() {
-        List<Bill> billList =  billRepository.getAllBills();
+    public List<BillDto> getAllBills(Integer pageNumber,Integer pageSize) {
+       Pageable pageable = PageRequest.of(pageNumber,pageSize);
+
+        List<Bill> billList =  billRepository.getAllBills(pageable);
+
         List<BillDto> billDtos = billList.stream()
                 .map(BillConverter::convertToUserDto)
                 .collect(Collectors.toList());
