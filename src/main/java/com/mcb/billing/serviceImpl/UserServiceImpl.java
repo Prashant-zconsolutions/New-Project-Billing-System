@@ -6,6 +6,7 @@ import com.mcb.billing.entity.User;
 import com.mcb.billing.repository.UserRepository;
 import com.mcb.billing.service.UserService;
 import com.mcb.billing.utils.UserConverter;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,15 +20,18 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
 
+    @Autowired
+    private ModelMapper modelMapper;
 
     @Override
     public List<UserDto> getAllUsers() {
        List<User> userList = userRepository.getAllUsers();
        List<UserDto> userDtoList = userList.stream()
-               .map(UserConverter::convertToUserDto)
+               .map(list -> modelMapper.map(list,UserDto.class))
                .collect(Collectors.toList());
        return userDtoList;
     }
+//     .map(UserConverter::convertToUserDto)
 
     @Override
     public UserDto addUser(UserDto userDto) {

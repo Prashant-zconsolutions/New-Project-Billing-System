@@ -49,9 +49,7 @@ public class BillServiceImpl implements BillService {
     @Override
     public List<BillDto> getAllBills(Integer pageNumber,Integer pageSize) {
        Pageable pageable = PageRequest.of(pageNumber,pageSize);
-
         List<Bill> billList =  billRepository.getAllBills(pageable);
-
         List<BillDto> billDtos = billList.stream()
                 .map(BillConverter::convertToUserDto)
                 .collect(Collectors.toList());
