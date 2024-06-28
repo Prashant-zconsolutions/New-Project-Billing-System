@@ -3,10 +3,16 @@ package com.mcb.billing.utils;
 import com.mcb.billing.dto.UserDto;
 import com.mcb.billing.entity.User;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserConverter {
 
-    private static ModelMapper modelMapper = new ModelMapper();
+
+//    private static ModelMapper modelMapper = new ModelMapper();
+
+    @Autowired
+    private static ModelMapper modelMapper;
+
 
     public static UserDto convertToUserDto(User user)
     {

@@ -48,7 +48,7 @@ public class BillController {
     }
 
 
-    @GetMapping("/getBillByNo/{number}")
+    @GetMapping("/getBillByNo/{billNumber}")
     public ResponseEntity<BillDto> getBillByNo(@PathVariable Integer billNumber)
     {
         BillDto billDto = billService.getBillByNo(billNumber);

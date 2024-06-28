@@ -14,8 +14,8 @@ import java.util.List;
 public interface BillRepository extends JpaRepository<Bill,Long> {
 
 
-    @Query(value = "SELECT * FROM bills",countQuery = "SELECT count(*) from bills",nativeQuery = true)
-    List<Bill> getAllBills(Pageable pageable);
+//    @Query(value = "SELECT * FROM bills",countQuery = "SELECT count(*) from bills",nativeQuery = true)
+//    List<Bill> getAllBills(Pageable pageable);
 
     @Query(value = "SELECT * FROM bills WHERE meter_number =:meter_number",nativeQuery = true)
     List<Bill> getAllBillsByMeterNumber(@Param("meter_number") Integer meterNumber);

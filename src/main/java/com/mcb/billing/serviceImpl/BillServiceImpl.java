@@ -13,9 +13,11 @@ import com.mcb.billing.service.BillService;
 import com.mcb.billing.utils.BillConverter;
 import com.mcb.billing.utils.UserConverter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -43,15 +45,19 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-
+    @Autowired
+    private ModelMapper modelMapper;
 
 
     @Override
     public List<BillDto> getAllBills(Integer pageNumber,Integer pageSize) {
        Pageable pageable = PageRequest.of(pageNumber,pageSize);
-        List<Bill> billList =  billRepository.getAllBills(pageable);
+        Page<Bill> pageBills = billRepository.findAll(pageable);
+        List<Bill> billList = pageBills.getContent();
+
+
         List<BillDto> billDtos = billList.stream()
-                .map(BillConverter::convertToUserDto)
+                .map(list-> modelMapper.map(list, BillDto.class))
                 .collect(Collectors.toList());
         return billDtos;
     }
@@ -61,7 +67,7 @@ public class BillServiceImpl implements BillService {
 
         List<Bill> billList = billRepository.getAllBillsByMeterNumber(meterNumber);
         List<BillDto> billDtoList = billList.stream()
-                .map(BillConverter::convertToUserDto)
+                .map(list-> modelMapper.map(list, BillDto.class))
                 .collect(Collectors.toList());
 
         return billDtoList;
@@ -78,7 +84,7 @@ public class BillServiceImpl implements BillService {
         }
         else
         {
-            return BillConverter.convertToUserDto(bill);
+            return modelMapper.map(bill, BillDto.class);
         }
 
     }
@@ -204,7 +210,8 @@ public class BillServiceImpl implements BillService {
         Bill bill = billRepository.getBillByBillNo(number);
         if(bill != null)
         {
-            return BillConverter.convertToUserDto(bill);
+//            return BillConverter.convertToUserDto(bill);
+            return modelMapper.map(bill, BillDto.class);
         }
         else
         {

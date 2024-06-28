@@ -31,7 +31,6 @@ public class UserServiceImpl implements UserService {
                .collect(Collectors.toList());
        return userDtoList;
     }
-//     .map(UserConverter::convertToUserDto)
 
     @Override
     public UserDto addUser(UserDto userDto) {
@@ -46,7 +45,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.getUserByMeterNo(number);
         if (user != null)
         {
-            return UserConverter.convertToUserDto(user);
+            return modelMapper.map(user,UserDto.class);
         }
         else {
             throw new ResourceNotFoundException("User is not exist with given meter number : "+number);
