@@ -17,18 +17,4 @@ public class ElectricityBillingSystemApplication {
 	}
 
 
-	@Bean
-	public ModelMapper modelMapper(){
-		ModelMapper modelMapper = new ModelMapper();
-
-		modelMapper.createTypeMap(Bill.class, BillDto.class)
-				.addMapping(Bill::getBillNumber, BillDto::setBillNumber)
-				.addMapping(Bill::getBillDate, BillDto::setBillDate)
-				.addMapping(Bill::getBillUnit, BillDto::setBillUnit)
-				.addMapping(Bill::getBillAmount, BillDto::setBillAmount)
-				.addMapping(Bill::getUser, BillDto::setUser);
-
-		return modelMapper;
-	}
-
 }

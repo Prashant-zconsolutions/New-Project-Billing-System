@@ -1,6 +1,7 @@
 package com.mcb.billing.service;
 
 import com.mcb.billing.dto.BillDto;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.Map;
 
 public interface BillService {
 
-    List<BillDto> getAllBills(Integer pageNumber,Integer pageSize);
+    Page<BillDto> getAllBills(Integer pageNumber, Integer pageSize);
 
     Map getAllBillsUsingMonth(Integer month,Integer year);
 

@@ -50,16 +50,17 @@ public class BillServiceImpl implements BillService {
 
 
     @Override
-    public List<BillDto> getAllBills(Integer pageNumber,Integer pageSize) {
+    public Page<BillDto> getAllBills(Integer pageNumber,Integer pageSize) {
        Pageable pageable = PageRequest.of(pageNumber,pageSize);
         Page<Bill> pageBills = billRepository.findAll(pageable);
-        List<Bill> billList = pageBills.getContent();
 
+        return pageBills.map(bills-> modelMapper.map(bills, BillDto.class));
 
-        List<BillDto> billDtos = billList.stream()
-                .map(list-> modelMapper.map(list, BillDto.class))
-                .collect(Collectors.toList());
-        return billDtos;
+//        List<Bill> billList = pageBills.getContent();
+//        List<BillDto> billDtos = billList.stream()
+//                .map(list-> modelMapper.map(list, BillDto.class))
+//                .collect(Collectors.toList());
+//        return billDtos;
     }
 
     @Override

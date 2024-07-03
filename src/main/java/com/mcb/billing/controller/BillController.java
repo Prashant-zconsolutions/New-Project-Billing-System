@@ -5,6 +5,7 @@ import com.mcb.billing.service.BillService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,11 +25,11 @@ public class BillController {
     private MessageSource messageSource;
 
     @GetMapping("/getAllBills")
-    public ResponseEntity<List<BillDto>> getAllBills(
+    public ResponseEntity<Page<BillDto>> getAllBills(
             @RequestParam(value = "pageNumber",defaultValue = "0",required = false)Integer pageNumber,
             @RequestParam(value = "pageSize",defaultValue = "5",required = false)Integer pageSize)
     {
-        List<BillDto> billDto = billService.getAllBills(pageNumber,pageSize);
+        Page<BillDto> billDto = billService.getAllBills(pageNumber,pageSize);
         return new ResponseEntity<>(billDto, HttpStatus.OK);
     }
 
