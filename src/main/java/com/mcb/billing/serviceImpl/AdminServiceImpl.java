@@ -6,6 +6,7 @@ import com.mcb.billing.entity.Admin;
 import com.mcb.billing.repository.AdminRepository;
 import com.mcb.billing.service.AdminService;
 import com.mcb.billing.utils.AdminConverter;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,16 +21,21 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     private AdminRepository adminRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
 
     @Override
     public List<AdminDto> getAllAdmins() {
 
         List<Admin> adminList = adminRepository.getAllAdmins();
-        List<AdminDto> adminDtoList = adminList.stream()
-                .map(AdminConverter::convertToAdminDto)
-                .collect(Collectors.toList());
-
-        return adminDtoList;
+        return adminList.stream().map(admin -> modelMapper.map(admin, AdminDto.class)).collect(Collectors.toList());
+//
+//        List<AdminDto> adminDtoList = adminList.stream()
+//                .map(AdminConverter::convertToAdminDto)
+//                .collect(Collectors.toList());
+//
+//        return adminDtoList;
     }
 
     @Override
