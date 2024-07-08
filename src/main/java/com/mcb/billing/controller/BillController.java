@@ -40,7 +40,7 @@ public class BillController {
         return new ResponseEntity<>(billDtoList,HttpStatus.OK);
     }
 
-    @PostMapping("/addBill/{number}")
+    @PostMapping("/addBill/{meterNumber}")
     public ResponseEntity<BillDto> addBill(@PathVariable Integer meterNumber,
                                            @Valid @RequestBody BillDto billDto)
     {

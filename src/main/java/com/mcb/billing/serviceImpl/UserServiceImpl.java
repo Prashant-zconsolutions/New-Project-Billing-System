@@ -35,9 +35,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto addUser(UserDto userDto) {
 
-        User user = UserConverter.convertToUserEntity(userDto);
-        User user1 = userRepository.save(user);
-        return UserConverter.convertToUserDto(user1);
+        User user = modelMapper.map(userDto, User.class);
+        User saveUser = userRepository.save(user);
+        return modelMapper.map(saveUser,UserDto.class);
     }
 
     @Override
@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
             user.setUserType(userDto.getUserType());
 
             User updateUser = userRepository.save(user);
-            return UserConverter.convertToUserDto(updateUser);
+            return modelMapper.map(updateUser,UserDto.class);
         }
         else
         {

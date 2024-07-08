@@ -2,6 +2,7 @@ package com.mcb.billing.serviceImpl;
 
 import com.mcb.billing.dto.BillDto;
 import com.mcb.billing.dto.BillDtoDB;
+import com.mcb.billing.dto.UserDto;
 import com.mcb.billing.ecxception.ResourceNotFoundException;
 import com.mcb.billing.entity.Bill;
 import com.mcb.billing.entity.Rate;
@@ -54,7 +55,8 @@ public class BillServiceImpl implements BillService {
        Pageable pageable = PageRequest.of(pageNumber,pageSize);
         Page<Bill> pageBills = billRepository.findAll(pageable);
 
-        return pageBills.map(bills-> modelMapper.map(bills, BillDto.class));
+        return pageBills.map(bills-> modelMapper.map(bills,BillDto.class));
+
 
 //        List<Bill> billList = pageBills.getContent();
 //        List<BillDto> billDtos = billList.stream()
@@ -67,10 +69,10 @@ public class BillServiceImpl implements BillService {
     public List<BillDto> getAllBillsBySpecificUser(Integer meterNumber) {
 
         List<Bill> billList = billRepository.getAllBillsByMeterNumber(meterNumber);
+
         List<BillDto> billDtoList = billList.stream()
                 .map(list-> modelMapper.map(list, BillDto.class))
                 .collect(Collectors.toList());
-
         return billDtoList;
 
     }
@@ -92,30 +94,28 @@ public class BillServiceImpl implements BillService {
 
     @Override
     public BillDto addBill(BillDto billDto,Integer number) {
+
         User user = userRepository.getUserByMeterNo(number);
-        billDto.setUser(UserConverter.convertToUserDto(user));
-        Bill bill = BillConverter.convertToBillEntity(billDto);
-
-
-
-        LocalDate date =  bill.getBillDate();
+//        LocalDate date =  bill.getBillDate();
 
         if(user == null)
         {
             throw new ResourceNotFoundException("User is not exist with given user number : " + number);
         }
-        else if (checkDuplicateIdAndDate(number ,bill.getBillDate()))
+        else if (checkDuplicateIdAndDate(number ,billDto.getBillDate()))
         {
-            throw new ResourceNotFoundException("Bill already created with given meter number : " + number+" and date : "+bill.getBillDate().getYear()+" "+bill.getBillDate().getMonth());
+            throw new ResourceNotFoundException("Bill already created with given meter number : " + number+" and date : "+billDto.getBillDate().getYear()+" "+billDto.getBillDate().getMonth());
         }
         else
         {
+            billDto.setUser(modelMapper.map(user, UserDto.class)); // User Entity To Dto
+            Bill bill = modelMapper.map(billDto, Bill.class); // Bill Dto To Entity
             bill.setUser(user);
             List<Rate> rates = rateRepository.getAllRatesByUserType(user.getUserType());
             double calculatedPrice = calculatePrice(rates,bill.getBillUnit());
             bill.setBillAmount(calculatedPrice);
             Bill bill1 =  billRepository.save(bill);
-            return BillConverter.convertToUserDto(bill1);
+            return modelMapper.map(bill1,BillDto.class);
         }
 
 
@@ -239,7 +239,9 @@ public class BillServiceImpl implements BillService {
             bill.setBillAmount(calculatedPrice);
 
            Bill saveBill =  billRepository.save(bill);
-           return BillConverter.convertToUserDto(saveBill);
+            return modelMapper.map(saveBill,BillDto.class);
+
+//           return BillConverter.convertToUserDto(saveBill);
         }
 
     }
