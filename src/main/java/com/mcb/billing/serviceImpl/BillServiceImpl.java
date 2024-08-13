@@ -13,6 +13,10 @@ import com.mcb.billing.repository.UserRepository;
 import com.mcb.billing.service.BillService;
 import com.mcb.billing.utils.BillConverter;
 import com.mcb.billing.utils.UserConverter;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.slf4j.Logger;
@@ -25,6 +29,11 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -49,6 +58,7 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private ModelMapper modelMapper;
 
+    private static final String DIRECTORY = "D:\\Resource";
 
     @Override
     public Page<BillDto> getAllBills(Integer pageNumber,Integer pageSize) {
@@ -243,6 +253,47 @@ public class BillServiceImpl implements BillService {
 
 //           return BillConverter.convertToUserDto(saveBill);
         }
+
+    }
+
+    @Override
+    public void exportBill(BillDto billDto) throws IOException {
+
+        Path path = Paths.get(DIRECTORY);
+        if(!Files.exists(path)){
+            Files.createDirectories(path);
+        }
+
+        String filePath = DIRECTORY + "/ELC Bill.xlsx";
+
+            Workbook workbook = new XSSFWorkbook();
+            FileOutputStream fileOut = new FileOutputStream(filePath);
+
+        Sheet sheet = workbook.createSheet("Electricity Bill");
+
+        // create a row
+        Row header = sheet.createRow(0);
+        header.createCell(0).setCellValue("Bill No.");
+        header.createCell(1).setCellValue("Bill Amount");
+        header.createCell(2).setCellValue("Bill Date");
+        header.createCell(3).setCellValue("Bill Unit");
+        header.createCell(4).setCellValue("Customer Name");
+        header.createCell(5).setCellValue("Customer Email");
+        header.createCell(6).setCellValue("Customer Type");
+
+
+
+        int rowNum = 1;
+        Row row = sheet.createRow(rowNum);
+        row.createCell(0).setCellValue(billDto.getBillNumber());
+        row.createCell(1).setCellValue(billDto.getBillAmount());
+        row.createCell(2).setCellValue(billDto.getBillDate());
+        row.createCell(3).setCellValue(billDto.getBillUnit());
+        row.createCell(4).setCellValue(billDto.getUser().getFirstName()+" "+billDto.getUser().getLastName());
+        row.createCell(5).setCellValue(billDto.getUser().getEmail());
+        row.createCell(6).setCellValue(billDto.getUser().getUserType());
+
+        workbook.write(fileOut);
 
     }
 

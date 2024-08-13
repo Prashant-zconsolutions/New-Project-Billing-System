@@ -3,6 +3,7 @@ package com.mcb.billing.service;
 import com.mcb.billing.dto.BillDto;
 import org.springframework.data.domain.Page;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
@@ -24,4 +25,6 @@ public interface BillService {
     BillDto getBillByNo(Integer billNumber);
 
     BillDto updateBillByBillNumber(Integer billNumber,BillDto billDto);
+
+    void exportBill(BillDto billDto) throws IOException;
 }
