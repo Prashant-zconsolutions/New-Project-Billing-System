@@ -658,6 +658,52 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Get Consumption of Bills using month and year",
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "test",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "test",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:8080/api/users/getAllBillsUsingMonth?month=3&year=2024",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"users",
+								"getAllBillsUsingMonth"
+							],
+							"query": [
+								{
+									"key": "month",
+									"value": "3"
+								},
+								{
+									"key": "year",
+									"value": "2024"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},

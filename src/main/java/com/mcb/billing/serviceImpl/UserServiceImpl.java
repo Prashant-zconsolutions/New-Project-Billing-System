@@ -6,10 +6,15 @@ import com.mcb.billing.entity.User;
 import com.mcb.billing.repository.UserRepository;
 import com.mcb.billing.service.UserService;
 import com.mcb.billing.utils.UserConverter;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,11 +24,39 @@ public class UserServiceImpl implements UserService {
     private UserRepository userRepository;
 
 
+    @Autowired
+    private ModelMapper modelMapper;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @Override
     public List<UserDto> getAllUsers() {
+
+//        List<Map<String, Object>> rows = jdbcTemplate.queryForList("SELECT first_name , last_name FROM users");
+//        List<String> firstName = new ArrayList<>();
+//        List<String> lastName = new ArrayList<>();
+//        for(Map<String,Object> row: rows)
+//        {
+//            firstName.add(row.get("first_name").toString());
+//            lastName.add(row.get("last_name").toString());
+//        }
+//        firstName.forEach(s-> System.out.println(s));
+//        lastName.forEach(s-> System.out.println(s));
+
+
+
+//        result.forEach(ro->{
+//            ro.entrySet()
+//                    .forEach(entry-> {
+//                        System.out.println(entry.getKey()+" : "+entry.getValue());
+//                    });
+//        });
+
+        
        List<User> userList = userRepository.getAllUsers();
        List<UserDto> userDtoList = userList.stream()
-               .map(UserConverter::convertToUserDto)
+               .map(list -> modelMapper.map(list,UserDto.class))
                .collect(Collectors.toList());
        return userDtoList;
     }
@@ -31,9 +64,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto addUser(UserDto userDto) {
 
-        User user = UserConverter.convertToUserEntity(userDto);
-        User user1 = userRepository.save(user);
-        return UserConverter.convertToUserDto(user1);
+        User user = modelMapper.map(userDto, User.class);
+        User saveUser = userRepository.save(user);
+        return modelMapper.map(saveUser,UserDto.class);
     }
 
     @Override
@@ -41,7 +74,7 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.getUserByMeterNo(number);
         if (user != null)
         {
-            return UserConverter.convertToUserDto(user);
+            return modelMapper.map(user,UserDto.class);
         }
         else {
             throw new ResourceNotFoundException("User is not exist with given meter number : "+number);
@@ -49,17 +82,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String deleteUserByNo(Integer number) {
+    public Boolean deleteUserByNo(Integer meterNumber){
 
-        User user = userRepository.getUserByMeterNo(number);
+        User user = userRepository.getUserByMeterNo(meterNumber);
         if (user != null)
         {
-                userRepository.deleteByMeterNo(number);
-                return "User Deleted Successfully!";
+                userRepository.deleteByMeterNo(meterNumber);
+                return true;
         }
         else
         {
-            throw new ResourceNotFoundException("User is not exist with given meter number : " + number);
+            return false;
         }
     }
 
@@ -80,7 +113,7 @@ public class UserServiceImpl implements UserService {
             user.setUserType(userDto.getUserType());
 
             User updateUser = userRepository.save(user);
-            return UserConverter.convertToUserDto(updateUser);
+            return modelMapper.map(updateUser,UserDto.class);
         }
         else
         {

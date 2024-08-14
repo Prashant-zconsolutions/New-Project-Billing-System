@@ -6,6 +6,7 @@ import com.mcb.billing.entity.Admin;
 import com.mcb.billing.repository.AdminRepository;
 import com.mcb.billing.service.AdminService;
 import com.mcb.billing.utils.AdminConverter;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,16 +21,21 @@ public class AdminServiceImpl implements AdminService {
     @Autowired
     private AdminRepository adminRepository;
 
+    @Autowired
+    private ModelMapper modelMapper;
+
 
     @Override
     public List<AdminDto> getAllAdmins() {
 
         List<Admin> adminList = adminRepository.getAllAdmins();
-        List<AdminDto> adminDtoList = adminList.stream()
-                .map(AdminConverter::convertToAdminDto)
-                .collect(Collectors.toList());
-
-        return adminDtoList;
+        return adminList.stream().map(admin -> modelMapper.map(admin, AdminDto.class)).collect(Collectors.toList());
+//
+//        List<AdminDto> adminDtoList = adminList.stream()
+//                .map(AdminConverter::convertToAdminDto)
+//                .collect(Collectors.toList());
+//
+//        return adminDtoList;
     }
 
     @Override
@@ -68,17 +74,17 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public String deleteAdminById(Integer adminNumber) {
+    public Boolean deleteAdminById(Integer adminNumber) {
 
         Admin admin = adminRepository.getAdminById(adminNumber);
         if(admin == null)
         {
-            throw new ResourceNotFoundException("Admin is not exist with given Admin Id : " + adminNumber);
+            return false;
         }
         else
         {
             adminRepository.deleteByAdminId(adminNumber);
-            return "Admin Deleted Successfully!";
+            return true;
         }
     }
 
@@ -87,19 +93,16 @@ public class AdminServiceImpl implements AdminService {
 
         Admin admin = adminRepository.getAdminById(adminId);
         Admin adminByUsername = adminRepository.getAdminByUsername(adminDto.getAdminUserName());
-        if(adminByUsername != null)
-        {
+        if (adminByUsername != null) {
             throw new ResourceNotFoundException("Admin is already exist with given Admin username : " + adminByUsername.getAdminUserName());
-        }
-        else if (admin != null)
-        {
+        } else if (admin != null) {
             admin.setAdminUserName(adminDto.getAdminUserName());
             admin.setAdminPassword(adminDto.getAdminPassword());
-            Admin updateAdmin =  adminRepository.save(admin);
+            Admin updateAdmin = adminRepository.save(admin);
             return AdminConverter.convertToAdminDto(updateAdmin);
-        } else
-        {
+        } else {
             throw new ResourceNotFoundException("Admin is not exist with given Admin Id : " + adminId);
         }
     }
+
 }

@@ -1,7 +1,8 @@
 package com.mcb.billing.serviceImpl;
 
-import com.mcb.billing.controller.AdminController;
 import com.mcb.billing.dto.BillDto;
+import com.mcb.billing.dto.BillDtoDB;
+import com.mcb.billing.dto.UserDto;
 import com.mcb.billing.ecxception.ResourceNotFoundException;
 import com.mcb.billing.entity.Bill;
 import com.mcb.billing.entity.Rate;
@@ -12,12 +13,27 @@ import com.mcb.billing.repository.UserRepository;
 import com.mcb.billing.service.BillService;
 import com.mcb.billing.utils.BillConverter;
 import com.mcb.billing.utils.UserConverter;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,24 +52,37 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private RateRepository rateRepository;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    private static final String DIRECTORY = "D:\\Resource";
 
     @Override
-    public List<BillDto> getAllBills() {
-        List<Bill> billList =  billRepository.getAllBills();
-        List<BillDto> billDtos = billList.stream()
-                .map(BillConverter::convertToUserDto)
-                .collect(Collectors.toList());
-        return billDtos;
+    public Page<BillDto> getAllBills(Integer pageNumber,Integer pageSize) {
+       Pageable pageable = PageRequest.of(pageNumber,pageSize);
+        Page<Bill> pageBills = billRepository.findAll(pageable);
+
+        return pageBills.map(bills-> modelMapper.map(bills,BillDto.class));
+
+
+//        List<Bill> billList = pageBills.getContent();
+//        List<BillDto> billDtos = billList.stream()
+//                .map(list-> modelMapper.map(list, BillDto.class))
+//                .collect(Collectors.toList());
+//        return billDtos;
     }
 
     @Override
     public List<BillDto> getAllBillsBySpecificUser(Integer meterNumber) {
 
         List<Bill> billList = billRepository.getAllBillsByMeterNumber(meterNumber);
-        List<BillDto> billDtoList = billList.stream()
-                .map(BillConverter::convertToUserDto)
-                .collect(Collectors.toList());
 
+        List<BillDto> billDtoList = billList.stream()
+                .map(list-> modelMapper.map(list, BillDto.class))
+                .collect(Collectors.toList());
         return billDtoList;
 
     }
@@ -68,37 +97,35 @@ public class BillServiceImpl implements BillService {
         }
         else
         {
-            return BillConverter.convertToUserDto(bill);
+            return modelMapper.map(bill, BillDto.class);
         }
 
     }
 
     @Override
     public BillDto addBill(BillDto billDto,Integer number) {
+
         User user = userRepository.getUserByMeterNo(number);
-        billDto.setUser(UserConverter.convertToUserDto(user));
-        Bill bill = BillConverter.convertToBillEntity(billDto);
-
-
-
-        LocalDate date =  bill.getBillDate();
+//        LocalDate date =  bill.getBillDate();
 
         if(user == null)
         {
             throw new ResourceNotFoundException("User is not exist with given user number : " + number);
         }
-        else if (checkDuplicateIdAndDate(number ,bill.getBillDate()))
+        else if (checkDuplicateIdAndDate(number ,billDto.getBillDate()))
         {
-            throw new ResourceNotFoundException("Bill already created with given meter number : " + number+" and date : "+bill.getBillDate().getYear()+" "+bill.getBillDate().getMonth());
+            throw new ResourceNotFoundException("Bill already created with given meter number : " + number+" and date : "+billDto.getBillDate().getYear()+" "+billDto.getBillDate().getMonth());
         }
         else
         {
+            billDto.setUser(modelMapper.map(user, UserDto.class)); // User Entity To Dto
+            Bill bill = modelMapper.map(billDto, Bill.class); // Bill Dto To Entity
             bill.setUser(user);
             List<Rate> rates = rateRepository.getAllRatesByUserType(user.getUserType());
             double calculatedPrice = calculatePrice(rates,bill.getBillUnit());
             bill.setBillAmount(calculatedPrice);
             Bill bill1 =  billRepository.save(bill);
-            return BillConverter.convertToUserDto(bill1);
+            return modelMapper.map(bill1,BillDto.class);
         }
 
 
@@ -179,11 +206,11 @@ public class BillServiceImpl implements BillService {
     }
 
     @Override
-    public String deleteByBillNo(Integer number) {
+    public Boolean deleteByBillNo(Integer number) {
         Bill bill = billRepository.getBillByBillNo(number);
         if (bill != null){
             billRepository.deleteBillByNo(number);
-            return "Bill Deleted Successfully!";
+            return true;
         }else{
             throw new ResourceNotFoundException("Bill is not exist with given bill number : " + number);
         }
@@ -194,7 +221,8 @@ public class BillServiceImpl implements BillService {
         Bill bill = billRepository.getBillByBillNo(number);
         if(bill != null)
         {
-            return BillConverter.convertToUserDto(bill);
+//            return BillConverter.convertToUserDto(bill);
+            return modelMapper.map(bill, BillDto.class);
         }
         else
         {
@@ -221,53 +249,71 @@ public class BillServiceImpl implements BillService {
             bill.setBillAmount(calculatedPrice);
 
            Bill saveBill =  billRepository.save(bill);
-           return BillConverter.convertToUserDto(saveBill);
+            return modelMapper.map(saveBill,BillDto.class);
+
+//           return BillConverter.convertToUserDto(saveBill);
         }
 
     }
 
     @Override
-    public List getAllBillsUsingMonth() {
-        Logger logger = LoggerFactory.getLogger(BillServiceImpl.class);
+    public void exportBill(BillDto billDto) throws IOException {
 
-        List<Bill> billList =  billRepository.getAllBillByMonthAndYear(01,2024);
+        Path path = Paths.get(DIRECTORY);
+        if(!Files.exists(path)){
+            Files.createDirectories(path);
+        }
 
-        List<BillDto> billDtos = billList.stream()
-                .map(BillConverter::convertToUserDto)
-                .collect(Collectors.toList());
+        String filePath = DIRECTORY + "/ELC Bill.xlsx";
+
+            Workbook workbook = new XSSFWorkbook();
+            FileOutputStream fileOut = new FileOutputStream(filePath);
+
+        Sheet sheet = workbook.createSheet("Electricity Bill");
+
+        // create a row
+        Row header = sheet.createRow(0);
+        header.createCell(0).setCellValue("Bill No.");
+        header.createCell(1).setCellValue("Bill Amount");
+        header.createCell(2).setCellValue("Bill Date");
+        header.createCell(3).setCellValue("Bill Unit");
+        header.createCell(4).setCellValue("Customer Name");
+        header.createCell(5).setCellValue("Customer Email");
+        header.createCell(6).setCellValue("Customer Type");
 
 
-        List<Map<String, Object>> list = billDtos.stream()
-                .map(bill -> {
 
+        int rowNum = 1;
+        Row row = sheet.createRow(rowNum);
+        row.createCell(0).setCellValue(billDto.getBillNumber());
+        row.createCell(1).setCellValue(billDto.getBillAmount());
+        row.createCell(2).setCellValue(billDto.getBillDate());
+        row.createCell(3).setCellValue(billDto.getBillUnit());
+        row.createCell(4).setCellValue(billDto.getUser().getFirstName()+" "+billDto.getUser().getLastName());
+        row.createCell(5).setCellValue(billDto.getUser().getEmail());
+        row.createCell(6).setCellValue(billDto.getUser().getUserType());
 
+        workbook.write(fileOut);
 
-                    int unit = bill.getBillUnit();
-                    String consumptionLevel;
-                    if (unit >= 0 && unit <= 100) {
-                        consumptionLevel = "Low consumption";
-                    } else if (unit > 100 && unit <= 300) {
-                        consumptionLevel = "Medium consumption";
-                    } else if (unit > 300) {
-                        consumptionLevel = "High consumption";
-                    } else {
-                        consumptionLevel = "Unknown"; // Handle unexpected values
-                    }
-
-                   return  Map.of("Bill number",bill.getBillNumber(),
-                            "Bill unit",bill.getBillUnit(),
-                           "User",bill.getUser(),
-                           "Bill Consumption",consumptionLevel
-                             );
-
-                }).collect(Collectors.toList());
-
-            return list;
     }
 
+    @Override
+    public Map getAllBillsUsingMonth(Integer month,Integer year) {
 
-//    public static Map Consumption()
-//    {
-//
-//    }
+        String sql ="SELECT b.*, \n" +
+                "    CASE \n" +
+                "        WHEN b.bill_unit >= 0 AND b.bill_unit < 100 THEN 'Low' \n" +
+                "        WHEN b.bill_unit >= 100 AND b.bill_unit < 300 THEN 'Medium' \n" +
+                "        WHEN b.bill_unit >= 300 THEN 'High' \n" +
+                "        ELSE 'Unknown' \n" +
+                "    END AS consumption \n" +
+                "FROM bills b \n" +
+                "WHERE EXTRACT(MONTH FROM bill_date) = "+month+" AND EXTRACT(YEAR FROM bill_date) = "+year+" ;";
+
+          List<BillDtoDB> list =  jdbcTemplate.query(sql, BeanPropertyRowMapper.newInstance(BillDtoDB.class));
+
+        Map<String, List<BillDtoDB>> listMap = list.stream().collect(Collectors.groupingBy(BillDtoDB::getConsumption));
+        return listMap;
+
+    }
 }

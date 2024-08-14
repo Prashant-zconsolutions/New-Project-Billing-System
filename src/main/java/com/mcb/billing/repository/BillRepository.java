@@ -2,6 +2,7 @@ package com.mcb.billing.repository;
 
 import com.mcb.billing.entity.Bill;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,8 +14,8 @@ import java.util.List;
 public interface BillRepository extends JpaRepository<Bill,Long> {
 
 
-    @Query(value = "SELECT * FROM bills",nativeQuery = true)
-    List<Bill> getAllBills();
+//    @Query(value = "SELECT * FROM bills",countQuery = "SELECT count(*) from bills",nativeQuery = true)
+//    List<Bill> getAllBills(Pageable pageable);
 
     @Query(value = "SELECT * FROM bills WHERE meter_number =:meter_number",nativeQuery = true)
     List<Bill> getAllBillsByMeterNumber(@Param("meter_number") Integer meterNumber);

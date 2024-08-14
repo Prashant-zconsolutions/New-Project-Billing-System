@@ -4,19 +4,23 @@ import com.mcb.billing.dto.UserDto;
 import com.mcb.billing.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Locale;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserController {
 
-
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private MessageSource messageSource;
 
 
     @GetMapping("/getAllUsers")
@@ -33,33 +37,34 @@ public class UserController {
         return new ResponseEntity<>(dto,HttpStatus.OK);
     }
 
-    @DeleteMapping("/deleteUser/{number}")
-    public ResponseEntity<String> deleteUser(@PathVariable Integer number)
+    @DeleteMapping("/deleteUser/{meterNumber}")
+    public ResponseEntity<String> deleteUser(@PathVariable Integer meterNumber,
+                                             @RequestHeader(name = "Accept-Language", required = false) Locale locale)
     {
-        try
-        {
-            String s = userService.deleteUserByNo(number);
-            return new ResponseEntity<>(s,HttpStatus.OK);
-        }
-        catch (Exception ex)
-        {
-            return new ResponseEntity<>(ex.getMessage(),HttpStatus.OK);
-        }
 
+                if(userService.deleteUserByNo(meterNumber))
+                {
+                    String successMessage = messageSource.getMessage("user.delete.success", null, locale);
+                    return ResponseEntity.ok(successMessage);
+
+                }else {
+                    String notFoundMessage = messageSource.getMessage("user.delete.notfound", new Object[]{meterNumber}, locale);
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(notFoundMessage);
+                }
 
     }
 
-    @GetMapping("/getUserByNumber/{number}")
-    public ResponseEntity<UserDto> getUserByMeterNumber(@PathVariable Integer number)
+    @GetMapping("/getUserByNumber/{meterNumber}")
+    public ResponseEntity<UserDto> getUserByMeterNumber(@PathVariable Integer meterNumber)
     {
-       UserDto  userDto = userService.getUserByMeterNumber(number);
+       UserDto  userDto = userService.getUserByMeterNumber(meterNumber);
        return new ResponseEntity<>(userDto,HttpStatus.OK);
     }
 
-    @PutMapping("/updateUser/{number}")
-    public ResponseEntity<UserDto> updateUser(@PathVariable Integer number ,@Valid @RequestBody UserDto userDto)
+    @PutMapping("/updateUser/{meterNumber}")
+    public ResponseEntity<UserDto> updateUser(@PathVariable Integer meterNumber ,@Valid @RequestBody UserDto userDto)
     {
-        UserDto dto =  userService.updateUser(number,userDto);
+        UserDto dto =  userService.updateUser(meterNumber,userDto);
         return new ResponseEntity<>(dto,HttpStatus.OK);
     }
 

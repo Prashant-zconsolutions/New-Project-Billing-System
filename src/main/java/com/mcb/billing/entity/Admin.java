@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "admin")
-public class Admin {
+public class Admin{
 
 
     @Id

@@ -13,19 +13,15 @@ import java.time.LocalDate;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class BillDto {
+public class BillDtoDB {
+
 
     private int billNumber;
-
-    @NotNull(message = "Date Cannot be null")
     private LocalDate billDate;
-
-    @NotNull(message = "Bill unit cannot be null")
-    @Min(value = 1, message = "Value must be greater than 0")
     private Integer billUnit;
-
     private Double billAmount;
+    private Integer meterNumber;
+    private String consumption;
 
-    private UserDto user;
 
 }

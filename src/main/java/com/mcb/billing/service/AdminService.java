@@ -13,7 +13,7 @@ public interface AdminService {
 
     AdminDto createNewAdmin(AdminDto adminDto);
 
-    String deleteAdminById(Integer adminNumber);
+    Boolean deleteAdminById(Integer adminNumber);
 
     AdminDto updateAdmin(Integer adminId,AdminDto adminDto);
 
