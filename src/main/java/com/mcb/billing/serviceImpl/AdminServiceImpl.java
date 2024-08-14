@@ -93,18 +93,14 @@ public class AdminServiceImpl implements AdminService {
 
         Admin admin = adminRepository.getAdminById(adminId);
         Admin adminByUsername = adminRepository.getAdminByUsername(adminDto.getAdminUserName());
-        if(adminByUsername != null)
-        {
+        if (adminByUsername != null) {
             throw new ResourceNotFoundException("Admin is already exist with given Admin username : " + adminByUsername.getAdminUserName());
-        }
-        else if (admin != null)
-        {
+        } else if (admin != null) {
             admin.setAdminUserName(adminDto.getAdminUserName());
             admin.setAdminPassword(adminDto.getAdminPassword());
-            Admin updateAdmin =  adminRepository.save(admin);
+            Admin updateAdmin = adminRepository.save(admin);
             return AdminConverter.convertToAdminDto(updateAdmin);
-        } else
-        {
+        } else {
             throw new ResourceNotFoundException("Admin is not exist with given Admin Id : " + adminId);
         }
     }

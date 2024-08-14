@@ -14,6 +14,9 @@ public interface UserRepository extends JpaRepository<User,Long> {
     @Query(value = "SELECT * FROM users",nativeQuery = true)
     List<User> getAllUsers();
 
+    @Query(value = "SELECT first_name , last_name FROM users",nativeQuery = true)
+    List<User> getAllUserss();
+
     @Query(value = "SELECT * FROM users WHERE meter_number=:number",nativeQuery = true)
     User getUserByMeterNo(@Param("number") Integer meterNumber);
 

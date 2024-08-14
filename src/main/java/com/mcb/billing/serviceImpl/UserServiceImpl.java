@@ -8,9 +8,13 @@ import com.mcb.billing.service.UserService;
 import com.mcb.billing.utils.UserConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,8 +27,33 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
     @Override
     public List<UserDto> getAllUsers() {
+
+//        List<Map<String, Object>> rows = jdbcTemplate.queryForList("SELECT first_name , last_name FROM users");
+//        List<String> firstName = new ArrayList<>();
+//        List<String> lastName = new ArrayList<>();
+//        for(Map<String,Object> row: rows)
+//        {
+//            firstName.add(row.get("first_name").toString());
+//            lastName.add(row.get("last_name").toString());
+//        }
+//        firstName.forEach(s-> System.out.println(s));
+//        lastName.forEach(s-> System.out.println(s));
+
+
+
+//        result.forEach(ro->{
+//            ro.entrySet()
+//                    .forEach(entry-> {
+//                        System.out.println(entry.getKey()+" : "+entry.getValue());
+//                    });
+//        });
+
+        
        List<User> userList = userRepository.getAllUsers();
        List<UserDto> userDtoList = userList.stream()
                .map(list -> modelMapper.map(list,UserDto.class))
