@@ -82,3 +82,15 @@ INSERT INTO public.admin(
 
 ALTER TABLE IF EXISTS public.rates
     ADD COLUMN user_price numeric;
+
+
+
+
+-- filter clause to apply conditions within aggregate functions.
+SELECT count(bill_number) filter(where bill_amount <= 400) as bill_count   FROM bills
+
+-- bool or function
+select BOOL_or(bill_number = 157) from bills
+
+-- bool and function
+select BOOL_and(bill_number = 157) from bills
