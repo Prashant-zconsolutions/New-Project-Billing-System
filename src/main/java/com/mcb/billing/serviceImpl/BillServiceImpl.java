@@ -1,5 +1,6 @@
 package com.mcb.billing.serviceImpl;
 
+import com.mcb.billing.controller.ExcelSaxHandler;
 import com.mcb.billing.dto.BillDto;
 import com.mcb.billing.dto.BillDtoDB;
 import com.mcb.billing.dto.UserDto;
@@ -11,11 +12,17 @@ import com.mcb.billing.repository.BillRepository;
 import com.mcb.billing.repository.RateRepository;
 import com.mcb.billing.repository.UserRepository;
 import com.mcb.billing.service.BillService;
+import com.mcb.billing.service.UserService;
 import com.mcb.billing.utils.BillConverter;
 import com.mcb.billing.utils.UserConverter;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.openxml4j.exceptions.OpenXML4JException;
+import org.apache.poi.openxml4j.opc.OPCPackage;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.eventusermodel.XSSFReader;
+import org.apache.poi.xssf.model.SharedStringsTable;
+import org.apache.poi.xssf.model.StylesTable;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
@@ -28,13 +35,20 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,6 +62,8 @@ public class BillServiceImpl implements BillService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private RateRepository rateRepository;
@@ -264,36 +280,166 @@ public class BillServiceImpl implements BillService {
             Files.createDirectories(path);
         }
 
+
         String filePath = DIRECTORY + "/ELC Bill.xlsx";
 
             Workbook workbook = new XSSFWorkbook();
-            FileOutputStream fileOut = new FileOutputStream(filePath);
+
+
+        CellStyle dateCellStyle = workbook.createCellStyle();
+        CreationHelper creationHelper = workbook.getCreationHelper();
+        dateCellStyle.setDataFormat(creationHelper.createDataFormat().getFormat("yyyy-mm-dd"));
+
+
+
+        FileOutputStream fileOut = new FileOutputStream(filePath);
 
         Sheet sheet = workbook.createSheet("Electricity Bill");
 
         // create a row
         Row header = sheet.createRow(0);
         header.createCell(0).setCellValue("Bill No.");
-        header.createCell(1).setCellValue("Bill Amount");
-        header.createCell(2).setCellValue("Bill Date");
-        header.createCell(3).setCellValue("Bill Unit");
-        header.createCell(4).setCellValue("Customer Name");
-        header.createCell(5).setCellValue("Customer Email");
-        header.createCell(6).setCellValue("Customer Type");
+        header.createCell(1).setCellValue("Bill Date");
+        header.createCell(2).setCellValue("Bill Unit");
+        header.createCell(3).setCellValue("Bill Amount");
+        header.createCell(4).setCellValue("Meter Number");
 
 
 
         int rowNum = 1;
         Row row = sheet.createRow(rowNum);
         row.createCell(0).setCellValue(billDto.getBillNumber());
-        row.createCell(1).setCellValue(billDto.getBillAmount());
-        row.createCell(2).setCellValue(billDto.getBillDate());
-        row.createCell(3).setCellValue(billDto.getBillUnit());
-        row.createCell(4).setCellValue(billDto.getUser().getFirstName()+" "+billDto.getUser().getLastName());
-        row.createCell(5).setCellValue(billDto.getUser().getEmail());
-        row.createCell(6).setCellValue(billDto.getUser().getUserType());
+
+        // Date implementation
+        LocalDate localDate = billDto.getBillDate();
+        Date date = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        Cell cell = row.createCell(1);
+        cell.setCellValue(date);
+        cell.setCellStyle(dateCellStyle);
+//        row.createCell(1).setCellValue(date);
+
+        row.createCell(2).setCellValue(billDto.getBillUnit());
+        row.createCell(3).setCellValue(billDto.getBillAmount());
+        row.createCell(4).setCellValue(billDto.getUser().getMeterNumber());
 
         workbook.write(fileOut);
+
+    }
+
+    @Override
+    public List<BillDto> importBill(){
+
+        List<BillDto> list = new ArrayList<>();
+        String filePath = DIRECTORY + "/ELC Bill 100.xlsx";
+
+        try (FileInputStream fis = new FileInputStream(filePath);
+             Workbook workbook = new XSSFWorkbook(fis)) {
+
+
+            Sheet sheet = workbook.getSheetAt(0); // Get the first sheet
+            for (Row row : sheet) {
+                // Read each cell in the row
+
+                if (row.getRowNum() == 0)
+                    continue;
+
+                BillDto billDto = new BillDto();
+                billDto.setBillNumber((int) row.getCell(0).getNumericCellValue());
+
+                // extract date from cell and convert it into local date
+                Date date = row.getCell(1).getDateCellValue();
+                LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                billDto.setBillDate(localDate);
+
+                billDto.setBillUnit((int) row.getCell(2).getNumericCellValue());
+                billDto.setBillAmount(row.getCell(3).getNumericCellValue());
+
+                int meterNumber = (int) row.getCell(4).getNumericCellValue();
+                UserDto userDto = userService.getUserByMeterNumber(meterNumber);
+                billDto.setUser(userDto);
+
+                list.add(billDto);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for(BillDto billDto : list)
+            saveToDatabase(billDto);
+
+        return list;
+    }
+
+    private void saveToDatabase(BillDto billDto) {
+
+        User user = userRepository.getUserByMeterNo(billDto.getUser().getMeterNumber());
+
+        if(user == null)
+        {
+            throw new ResourceNotFoundException("User is not exist with given user number : " + user.getMeterNumber());
+        }
+        else if (checkDuplicateIdAndDate(user.getMeterNumber() ,billDto.getBillDate()))
+        {
+            throw new ResourceNotFoundException("Bill already created with given meter number : " + user.getMeterNumber()+" and date : "+billDto.getBillDate().getYear()+" "+billDto.getBillDate().getMonth());
+        }
+        else
+        {
+            billDto.setUser(modelMapper.map(user, UserDto.class)); // User Entity To Dto
+            Bill bill = modelMapper.map(billDto, Bill.class); // Bill Dto To Entity
+            bill.setUser(user);
+            List<Rate> rates = rateRepository.getAllRatesByUserType(user.getUserType());
+            double calculatedPrice = calculatePrice(rates,bill.getBillUnit());
+            bill.setBillAmount(calculatedPrice);
+            billRepository.save(bill);
+        }
+
+    }
+
+
+    @Override
+    public void importSaxBill() throws IOException, SAXException, OpenXML4JException {
+
+        List<BillDto> list = new ArrayList<>();
+        String filePath = DIRECTORY + "/ELC Bill 100.xlsx";
+
+        try (FileInputStream fis = new FileInputStream(filePath);
+             Workbook workbook = new XSSFWorkbook(fis)) {
+
+
+            Sheet sheet = workbook.getSheetAt(0); // Get the first sheet
+            for (Row row : sheet) {
+                // Read each cell in the row
+
+                if (row.getRowNum() == 0)
+                    continue;
+
+                BillDto billDto = new BillDto();
+                billDto.setBillNumber((int) row.getCell(0).getNumericCellValue());
+
+                // extract date from cell and convert it into local date
+                Date date = row.getCell(1).getDateCellValue();
+                LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                billDto.setBillDate(localDate);
+
+                billDto.setBillUnit((int) row.getCell(2).getNumericCellValue());
+                billDto.setBillAmount(row.getCell(3).getNumericCellValue());
+
+                int meterNumber = (int) row.getCell(4).getNumericCellValue();
+                UserDto userDto = userService.getUserByMeterNumber(meterNumber);
+                billDto.setUser(userDto);
+
+                list.add(billDto);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for(BillDto billDto : list)
+            saveToDatabase(billDto);
+
+
 
     }
 

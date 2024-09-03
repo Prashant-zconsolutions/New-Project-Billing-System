@@ -88,6 +88,15 @@
 <!--            <version>2.4.5</version> &lt;!&ndash; Replace with the latest version &ndash;&gt;-->
 <!--        </dependency>-->
 
+
+<!--        <dependency>-->
+<!--            <groupId>org.apache.poi</groupId>-->
+<!--            <artifactId>poi-scratchpad</artifactId>-->
+<!--            <version>5.2.3</version>-->
+<!--        </dependency>-->
+
+
+
     </dependencies>
 
     <build>
